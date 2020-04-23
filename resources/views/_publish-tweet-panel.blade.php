@@ -4,7 +4,9 @@
 		<textarea name="body" placeholder="what's up doc?" class="w-full"></textarea>
 		<hr class="my-4">		
 		<footer class="flex justify-between">
-			<img src="{{auth()->user()->avatar}}" class="rounded-full mr-2" alt="{{auth()->user()->name}}" >
+			<a href="{{route('profile', auth()->user())}}">
+				<img src="{{auth()->user()->avatar}}" class="rounded-full mr-2" width="50" height="50" alt="{{auth()->user()->name}}" >
+			</a>
 			<button type="submit" class="bg-blue-500 rounded-lg shawdow py-2 px-2 text-white">Tweet-a-roo!</button>
 		</footer>
 		@error('body')

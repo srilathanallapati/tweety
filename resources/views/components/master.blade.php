@@ -24,16 +24,12 @@
         <section class="px-8 py-4">
             <header class="container mx-auto">
             	<div>
-					<img class="inline-block" alt="Tweety" src="/images/logo.png" width="50"> 
-					<div class="inline-block">Tweety</div>
-				</div>				
-			</header>
-    	</section>
-        <section class="px-8">
-            <main class="container mx-auto">
-                @yield('content')
-            </main>
-        </section>    
+        			<img class="inline-block" alt="Tweety" src="/images/logo.png" width="50"> 
+        			<div class="inline-block">Tweety</div>
+        		</div>				
+        	</header>
+        </section>   
+        {{ $slot }} 
     </div>
 </body>
 </html>
