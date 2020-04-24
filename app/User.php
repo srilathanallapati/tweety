@@ -6,11 +6,16 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use App\Followable;
+
+
 use App\Tweet;
+
+use App\Like;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, Followable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +23,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'avatar', 'email', 'password',
     ];
 
     /**
@@ -43,14 +48,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(Tweet::class);   
     }
-    
-    public function follows()
+    public function likes()
     {
-        return $this->belongsToMany(User::class,'follows','user_id','following_user_id')->withTimestamps();
+        return $this->hasMany(Like::class);
     }
-    
-    public function getAvatarAttribute() {
-        return 'https://i.pravatar.cc/?u='.$this->email;
+    public function setPasswordAttribute($value) {
+        $this->attributes['password'] = bcrypt($value);
+    }
+    public function getAvatarAttribute($value) {
+        if($value) {
+            $value = 'storage/'.$value;
+        }
+        //return 'https://i.pravatar.cc/?u='.$this->email;
+        //return asset($value);
+        return asset($value ?: '/images/default-avatar.jpeg');
+        
     }
     
     public function timeline()
@@ -60,9 +72,20 @@ class User extends Authenticatable
         $ids = $this->follows()->pluck('id');        
        // $ids->push($this->id);
         return Tweet::whereIn('user_id',$ids)
-                ->orWhere('user_id',$this->id)        
-                ->latest()->get();        
+                ->orWhere('user_id',$this->id) 
+                ->withLikes()
+                ->orderByDesc('id')
+                ->paginate(50);
+                
+                //->latest()->get();        
        
+    }
+    
+    public function path($append = '')
+    {
+        $path = route('profile', $this->name);
+        
+        return $append ? "{$path}/{$append}" : $path;
     }
     
 }
